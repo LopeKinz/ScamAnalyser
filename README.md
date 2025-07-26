@@ -1,125 +1,134 @@
+
 # Scam Detector 🛡️
 
-Ein KI-basiertes System zur Erkennung von Online-Betrug und verdächtigen Inhalten. Nutzt Ollama mit Llama3.2-vision für die Bildanalyse.
+An AI-powered system for detecting online scams and suspicious content. Uses Ollama with Llama3.2-vision for image analysis.
 
 ## Features ✨
 
-- **KI-basierte Analyse**: Verwendet Llama3.2-vision für präzise Scam-Erkennung
-- **Moderne Web-UI**: Responsive Design mit Drag & Drop Upload
-- **Production-Ready**: Docker-basierte Bereitstellung mit Nginx
-- **Umfassende Analyse**: Bewertung von 0-100 mit detaillierter Erklärung
-- **Mehrere Scam-Typen**: Erkennt Phishing, Fake-Shops, Tech-Support-Betrug uvm.
-- **Sicherheit**: Rate-Limiting, Eingabevalidierung, sichere Headers
+- **AI-Based Analysis**: Utilizes Llama3.2-vision for precise scam detection  
+- **Modern Web UI**: Responsive design with drag & drop upload  
+- **Production-Ready**: Docker-based deployment with Nginx  
+- **Comprehensive Analysis**: Score from 0–100 with detailed explanation  
+- **Multiple Scam Types**: Detects phishing, fake shops, tech support scams, and more  
+- **Security**: Rate limiting, input validation, secure headers  
 
-## Voraussetzungen 📋
+## Requirements 📋
 
-### Lokale Entwicklung
+### Local Development
 - Python 3.11+
-- Node.js (optional, für Frontend-Entwicklung)
-- Ollama mit Llama3.2-vision Modell
+- Node.js (optional, for frontend development)
+- Ollama with Llama3.2-vision model
 
 ### Production Deployment
 - Docker & Docker Compose
-- Ollama (läuft auf Host-System)
+- Ollama (runs on the host system)
 
 ## Installation & Setup 🚀
 
 ### 1. Ollama Setup
 
-Installieren Sie Ollama von [ollama.ai](https://ollama.ai) und laden Sie das Modell:
+Install Ollama from [ollama.ai](https://ollama.ai) and download the model:
 
 ```bash
-# Ollama installieren (je nach Betriebssystem)
+# Install Ollama (according to your OS)
 curl -fsSL https://ollama.ai/install.sh | sh
 
-# Llama3.2-vision Modell herunterladen
+# Download the Llama3.2-vision model
 ollama pull llama3.2-vision
 
-# Ollama Server starten (läuft auf Port 11434)
+# Start the Ollama server (runs on port 11434)
 ollama serve
-```
+````
 
-### 2. Projekt klonen/herunterladen
+### 2. Clone/Download the Project
 
 ```bash
 git clone <your-repo-url>
 cd scam-detector
 ```
 
-### 3. Lokale Entwicklung
+### 3. Local Development
 
 #### Backend
+
 ```bash
 cd backend
 pip install -r requirements.txt
 python -m app.main
 ```
 
-Das Backend läuft auf: http://localhost:8000
+The backend runs at: [http://localhost:8000](http://localhost:8000)
 
 #### Frontend
-Öffnen Sie `frontend/index.html` direkt im Browser oder verwenden Sie einen lokalen Server:
+
+Open `frontend/index.html` directly in your browser, or use a local server:
 
 ```bash
 cd frontend
 python -m http.server 3000
-# oder
+# or
 npx serve .
 ```
 
-### 4. Production mit Docker
+### 4. Production with Docker
 
 ```bash
-# Alle Services starten
+# Start all services
 docker-compose up -d
 
-# Oder nur Haupt-Services (ohne Monitoring)
+# Or only core services (without monitoring)
 docker-compose up -d scam-detector-api nginx
 
-# Logs anzeigen
+# Show logs
 docker-compose logs -f scam-detector-api
 
-# Services stoppen
+# Stop services
 docker-compose down
 ```
 
-Die Anwendung ist verfügbar unter:
-- Frontend: http://localhost
-- Backend API: http://localhost:8000
-- API Dokumentation: http://localhost:8000/docs
+The application is available at:
 
-## Konfiguration ⚙️
+* Frontend: [http://localhost](http://localhost)
+* Backend API: [http://localhost:8000](http://localhost:8000)
+* API Docs: [http://localhost:8000/docs](http://localhost:8000/docs)
 
-### Umgebungsvariablen
+## Configuration ⚙️
 
-#### Backend (.env oder docker-compose.yml)
+### Environment Variables
+
+#### Backend (`.env` or `docker-compose.yml`)
+
 ```env
-OLLAMA_BASE_URL=http://localhost:11434  # Ollama Server URL
-MODEL_NAME=llama3.2-vision              # Verwendetes Modell
-LOG_LEVEL=INFO                          # Logging Level
+OLLAMA_BASE_URL=http://localhost:11434  # Ollama server URL
+MODEL_NAME=llama3.2-vision              # Used model
+LOG_LEVEL=INFO                          # Logging level
 ```
 
-#### Frontend (script.js)
+#### Frontend (`script.js`)
+
 ```javascript
-// API Base URL anpassen
+// Set API base URL
 this.apiBaseUrl = 'http://localhost:8000';
 ```
 
-### Nginx Konfiguration
+### Nginx Configuration
 
-Passen Sie `nginx.conf` für produktive Verwendung an:
-- SSL-Zertifikate konfigurieren
-- Domain-spezifische Einstellungen
-- Rate-Limiting anpassen
+Edit `nginx.conf` for production use:
 
-## API Dokumentation 📚
+* Configure SSL certificates
+* Add domain-specific settings
+* Adjust rate-limiting
+
+## API Documentation 📚
 
 ### Endpoints
 
 #### `GET /health`
-Health Check für Service-Status
+
+Health check for service status
 
 **Response:**
+
 ```json
 {
   "status": "healthy",
@@ -129,43 +138,47 @@ Health Check für Service-Status
 ```
 
 #### `POST /analyze`
-Bildanalyse für Scam-Erkennung
+
+Image analysis for scam detection
 
 **Request:**
-- Content-Type: `multipart/form-data`
-- Body: `file` (Bilddatei, max 10MB)
+
+* Content-Type: `multipart/form-data`
+* Body: `file` (image file, max 10MB)
 
 **Response:**
+
 ```json
 {
   "score": 85,
-  "explanation": "Das Bild zeigt eine verdächtige E-Mail mit...",
-  "risk_level": "HOCH",
+  "explanation": "The image shows a suspicious email with...",
+  "risk_level": "HIGH",
   "confidence": 0.92
 }
 ```
 
-### Risiko-Level
-- `NIEDRIG`: Score 0-25
-- `MITTEL`: Score 26-50  
-- `HOCH`: Score 51-75
-- `SEHR_HOCH`: Score 76-100
+### Risk Levels
 
-## Verwendung 💡
+* `LOW`: Score 0–25
+* `MEDIUM`: Score 26–50
+* `HIGH`: Score 51–75
+* `VERY_HIGH`: Score 76–100
 
-### Web-Interface
+## Usage 💡
 
-1. **Bild hochladen**: Ziehen Sie ein Bild in den Upload-Bereich oder klicken Sie auf "Datei auswählen"
-2. **Vorschau prüfen**: Überprüfen Sie das hochgeladene Bild
-3. **Analyse starten**: Klicken Sie auf "Analysieren"
-4. **Ergebnis interpretieren**: Bewerten Sie Score, Risiko-Level und Erklärung
+### Web Interface
 
-### Programmatische Nutzung
+1. **Upload image**: Drag and drop an image or use the file picker
+2. **Check preview**: Review the uploaded image
+3. **Start analysis**: Click the “Analyze” button
+4. **Interpret results**: Review the score, risk level, and explanation
+
+### Programmatic Usage
 
 ```python
 import requests
 
-# Bild analysieren
+# Analyze image
 with open('suspicious_image.png', 'rb') as f:
     response = requests.post(
         'http://localhost:8000/analyze',
@@ -175,47 +188,50 @@ with open('suspicious_image.png', 'rb') as f:
     print(f"Scam Score: {result['score']}/100")
 ```
 
-## Entwicklung 🛠️
+## Development 🛠️
 
-### Projektstruktur
+### Project Structure
+
 ```
 scam-detector/
 ├── backend/                 # FastAPI Backend
 │   ├── app/
-│   │   └── main.py         # Haupt-API Code
-│   ├── requirements.txt    # Python Dependencies
-│   └── Dockerfile         # Backend Container
-├── frontend/              # Web Frontend
-│   ├── index.html        # Haupt-HTML
-│   ├── styles.css        # CSS Styling
-│   └── script.js         # JavaScript Logic
-├── docker-compose.yml    # Container Orchestrierung
-├── nginx.conf           # Webserver Konfiguration
-└── README.md           # Diese Datei
+│   │   └── main.py          # Main API code
+│   ├── requirements.txt     # Python dependencies
+│   └── Dockerfile           # Backend container
+├── frontend/                # Web frontend
+│   ├── index.html           # Main HTML
+│   ├── styles.css           # CSS styling
+│   └── script.js            # JavaScript logic
+├── docker-compose.yml       # Container orchestration
+├── nginx.conf               # Webserver configuration
+└── README.md                # This file
 ```
 
-### Code-Style
+### Code Style
 
 #### Python (Backend)
-- PEP 8 Standards
-- Type Hints verwenden
-- Async/Await für I/O Operations
-- Structured Logging
+
+* Follows PEP 8
+* Uses type hints
+* Async/await for I/O operations
+* Structured logging
 
 #### JavaScript (Frontend)
-- ES6+ Features
-- Modular Classes
-- Error Handling
-- Accessibility Features
+
+* ES6+ features
+* Modular classes
+* Error handling
+* Accessibility considerations
 
 ### Testing
 
 ```bash
-# Backend Tests
+# Backend tests
 cd backend
 pytest
 
-# Frontend Tests (falls implementiert)
+# Frontend tests (if implemented)
 cd frontend
 npm test
 ```
@@ -224,13 +240,13 @@ npm test
 
 ### Production Monitoring
 
-Aktivieren Sie das Monitoring-Stack:
+Enable monitoring stack:
 
 ```bash
-# Mit Prometheus & Grafana
+# With Prometheus & Grafana
 docker-compose --profile monitoring up -d
 
-# Zugriff:
+# Access:
 # - Prometheus: http://localhost:9090
 # - Grafana: http://localhost:3000 (admin/admin)
 ```
@@ -238,115 +254,126 @@ docker-compose --profile monitoring up -d
 ### Logs
 
 ```bash
-# Backend Logs
+# Backend logs
 docker-compose logs -f scam-detector-api
 
-# Nginx Logs
+# Nginx logs
 docker-compose logs -f nginx
 
-# Alle Logs
+# All logs
 docker-compose logs -f
 ```
 
-## Sicherheit 🔒
+## Security 🔒
 
-### Implementierte Maßnahmen
-- **Input Validation**: Dateityp und -größe Prüfung
-- **Rate Limiting**: Schutz vor Missbrauch
-- **CORS Policy**: Kontrollierte Cross-Origin Requests
-- **Security Headers**: XSS, Clickjacking Schutz
-- **No Data Storage**: Bilder werden nicht gespeichert
+### Implemented Measures
 
-### Produktive Bereitstellung
-- HTTPS einrichten (SSL-Zertifikate)
-- Firewall konfigurieren
-- Regular Updates
-- Backup-Strategien
+* **Input Validation**: File type and size check
+* **Rate Limiting**: Prevents abuse
+* **CORS Policy**: Controlled cross-origin requests
+* **Security Headers**: XSS and clickjacking protection
+* **No Data Storage**: Images are not saved
+
+### Production Recommendations
+
+* Set up HTTPS (SSL certificates)
+* Configure firewall
+* Apply regular updates
+* Define backup strategies
 
 ## Troubleshooting 🔧
 
-### Häufige Probleme
+### Common Issues
 
-#### "Ollama Service nicht verfügbar"
+#### "Ollama service unavailable"
+
 ```bash
-# Ollama Status prüfen
+# Check Ollama status
 ollama list
 
-# Modell verfügbar?
+# Is the model available?
 ollama pull llama3.2-vision
 
-# Server läuft?
+# Is the server running?
 curl http://localhost:11434/api/tags
 ```
 
-#### "Backend nicht erreichbar"
+#### "Backend not reachable"
+
 ```bash
-# Container Status
+# Check container status
 docker-compose ps
 
-# Backend Logs
+# Backend logs
 docker-compose logs scam-detector-api
 
-# Netzwerk prüfen
+# Check network
 docker network ls
 ```
 
-#### Langsame Analyse
-- GPU-Unterstützung für Ollama aktivieren
-- Mehr RAM für Docker zuweisen
-- Modell-Parameter optimieren
+#### Slow Analysis
 
-### Performance Optimierung
+* Enable GPU support in Ollama
+* Allocate more RAM to Docker
+* Optimize model parameters
+
+### Performance Tuning
 
 #### Ollama
+
 ```bash
-# GPU-Unterstützung (NVIDIA)
+# GPU support (NVIDIA)
 docker run --gpus all ollama/ollama
 
-# Mehr RAM zuweisen
+# Allocate more memory
 OLLAMA_HOST=0.0.0.0:11434 OLLAMA_MODELS=/path/to/models ollama serve
 ```
 
 #### Backend
-- Gunicorn Worker erhöhen
-- Redis Caching implementieren
-- Bild-Komprimierung optimieren
+
+* Increase Gunicorn workers
+* Implement Redis caching
+* Optimize image compression
 
 ## Contributing 🤝
 
-1. Fork das Repository
-2. Feature Branch erstellen (`git checkout -b feature/amazing-feature`)
-3. Änderungen committen (`git commit -m 'Add amazing feature'`)
-4. Branch pushen (`git push origin feature/amazing-feature`)
-5. Pull Request erstellen
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push the branch (`git push origin feature/amazing-feature`)
+5. Open a pull request
 
 ## License 📄
 
-Dieses Projekt steht unter der MIT License - siehe [LICENSE](LICENSE) für Details.
+This project is licensed under the MIT License – see [LICENSE](LICENSE) for details.
 
-## Support & Kontakt 💬
+## Support & Contact 💬
 
-- **Issues**: Verwenden Sie GitHub Issues für Bug Reports
-- **Diskussionen**: GitHub Discussions für Fragen
-- **Security**: Sicherheitsprobleme privat melden
+* **Issues**: Use GitHub Issues for bug reports
+* **Discussions**: Use GitHub Discussions for general questions
+* **Security**: Report security issues privately
 
 ## Roadmap 🗺️
 
-### Geplante Features
-- [ ] Multi-Sprachen Support
-- [ ] API Rate Limiting per User
-- [ ] Erweiterte Scam-Kategorien
-- [ ] Batch-Verarbeitung
-- [ ] Mobile App
-- [ ] Plugin für Browser
+### Planned Features
 
-### Verbesserungen
-- [ ] Performance Optimierung
-- [ ] Erweiterte Tests
-- [ ] CI/CD Pipeline
-- [ ] Kubernetes Deployment
-- [ ] Erweiterte Monitoring
+* [ ] Multi-language support
+* [ ] Per-user API rate limiting
+* [ ] Extended scam categories
+* [ ] Batch processing
+* [ ] Mobile app
+* [ ] Browser plugin
+
+### Improvements
+
+* [ ] Performance optimization
+* [ ] Extended testing
+* [ ] CI/CD pipeline
+* [ ] Kubernetes deployment
+* [ ] Enhanced monitoring
 
 ---
 
-**Wichtiger Hinweis**: Diese Software dient als Hilfsmittel zur Scam-Erkennung. Die Ergebnisse sind Empfehlungen und keine Garantien. Bei verdächtigen Inhalten konsultieren Sie immer Sicherheitsexperten oder entsprechende Behörden.
+**Important Note**: This software is an aid for scam detection. Results are recommendations, not guarantees. Always consult security experts or authorities when in doubt.
+
+
