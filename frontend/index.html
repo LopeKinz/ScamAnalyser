@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scam Detector - KI-basierte Betrugs-Erkennung</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-shield-alt"></i>
+                    <h1>Scam Detector</h1>
+                </div>
+                <p class="subtitle">KI-basierte Erkennung von Online-Betrug</p>
+            </div>
+        </header
+        >
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Upload Section -->
+            <section class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-content">
+                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                        <h2>Screenshot hochladen</h2>
+                        <p>Laden Sie einen Screenshot einer verdächtigen Website, E-Mail oder Nachricht hoch</p>
+                        <div class="upload-actions">
+                            <input type="file" id="fileInput" accept="image/*" hidden>
+                            <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                                <i class="fas fa-image"></i>
+                                Datei auswählen
+                            </button>
+                            <span class="file-info">PNG, JPG, JPEG bis 10MB</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Image Preview -->
+            <section class="preview-section" id="previewSection" style="display: none;">
+                <div class="preview-container">
+                    <h3>Vorschau</h3>
+                    <div class="image-preview">
+                        <img id="previewImage" alt="Vorschau">
+                        <div class="preview-actions">
+                            <button class="btn btn-secondary" onclick="removeImage()">
+                                <i class="fas fa-times"></i>
+                                Entfernen
+                            </button>
+                            <button class="btn btn-primary" onclick="analyzeImage()" id="analyzeBtn">
+                                <i class="fas fa-search"></i>
+                                Analysieren
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Loading -->
+            <section class="loading-section" id="loadingSection" style="display: none;">
+                <div class="loading-container">
+                    <div class="spinner"></div>
+                    <h3>Analyse läuft...</h3>
+                    <p>Unsere KI analysiert das Bild auf mögliche Betrugs-Indikatoren</p>
+                </div>
+            </section>
+
+            <!-- Results -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <div class="results-container">
+                    <h3>Analyse-Ergebnis</h3>
+                    
+                    <!-- Score Display -->
+                    <div class="score-display">
+                        <div class="score-circle" id="scoreCircle">
+                            <div class="score-text">
+                                <span class="score-value" id="scoreValue">--</span>
+                                <span class="score-label">/ 100</span>
+                            </div>
+                        </div>
+                        <div class="risk-level" id="riskLevel">
+                            <span class="risk-label">Risiko-Level:</span>
+                            <span class="risk-value" id="riskValue">--</span>
+                        </div>
+                    </div>
+
+                    <!-- Explanation -->
+                    <div class="explanation">
+                        <h4><i class="fas fa-info-circle"></i> Erklärung</h4>
+                        <p id="explanationText">--</p>
+                    </div>
+
+                    <!-- Confidence -->
+                    <div class="confidence">
+                        <h4><i class="fas fa-chart-line"></i> Vertrauen der KI</h4>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" id="confidenceFill"></div>
+                        </div>
+                        <span class="confidence-value" id="confidenceValue">--</span>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="result-actions">
+                        <button class="btn btn-secondary" onclick="resetAnalysis()">
+                            <i class="fas fa-redo"></i>
+                            Neue Analyse
+                        </button>
+                        <button class="btn btn-outline" onclick="shareResult()">
+                            <i class="fas fa-share"></i>
+                            Ergebnis teilen
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Error Message -->
+            <section class="error-section" id="errorSection" style="display: none;">
+                <div class="error-container">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Fehler aufgetreten</h3>
+                    <p id="errorMessage">Ein unbekannter Fehler ist aufgetreten.</p>
+                    <button class="btn btn-secondary" onclick="resetAnalysis()">
+                        <i class="fas fa-redo"></i>
+                        Erneut versuchen
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Über Scam Detector</h4>
+                    <p>Ein KI-basiertes Tool zur Erkennung von Online-Betrug und verdächtigen Inhalten.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Wichtige Hinweise</h4>
+                    <ul>
+                        <li>Ergebnisse sind Empfehlungen, keine Garantien</li>
+                        <li>Bei Verdacht kontaktieren Sie Experten</li>
+                        <li>Hochgeladene Bilder werden nicht gespeichert</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Technologie</h4>
+                    <p>Powered by Ollama & Llama3.2-vision</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Scam Detector. Entwickelt für Ihre Sicherheit.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

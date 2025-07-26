@@ -1,0 +1,155 @@
+# Docker Compose Override für Netzwerk-Hosting
+# Verwendung: docker-compose -f docker-compose.yml -f docker-compose.network.yml up -d
+
+version: '3.8'
+
+services:
+  scam-detector-api:
+    # Netzwerk-spezifische Konfiguration
+    ports:
+      - "0.0.0.0:8000:8000"  # API auf allen Netzwerk-Interfaces verfügbar
+    environment:
+      - CORS_ORIGINS=["*"]  # Alle Origins erlauben (nur für lokales Netzwerk!)
+      - TRUSTED_HOSTS=["*"]  # Alle Hosts vertrauen
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - ENVIRONMENT=production
+      - LOG_LEVEL=INFO
+    restart: unless-stopped
+    
+    # Ressourcen-Limits für Netzwerk-Performance
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 2G
+    
+    # Health Check für Netzwerk-Monitoring
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  nginx:
+    # Netzwerk-Webserver Konfiguration
+    ports:
+      - "0.0.0.0:80:80"      # HTTP auf allen Interfaces
+      - "0.0.0.0:443:443"    # HTTPS vorbereitet
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+      - ./nginx-network.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro  # SSL-Zertifikate (optional)
+      - nginx_logs:/var/log/nginx
+    restart: unless-stopped
+    depends_on:
+      scam-detector-api:
+        condition: service_healthy
+    
+    # Nginx-spezifische Umgebungsvariablen
+    environment:
+      - NGINX_HOST=_  # Alle Hostnamen akzeptieren
+      - NGINX_PORT=80
+    
+    # Health Check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis für Session-Management (optional)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "127.0.0.1:6379:6379"  # Nur lokal, nicht über Netzwerk
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-scamdetector}
+    
+    # Ressourcen-Limits
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+
+  # Monitoring Dashboard (optional)
+  portainer:
+    image: portainer/portainer-ce:latest
+    ports:
+      - "127.0.0.1:9000:9000"  # Nur lokal zugänglich
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    restart: unless-stopped
+    profiles:
+      - monitoring
+    command: --admin-password='$2y$05$8oz75U8m5tI/xT4P0NbSHeVQOC6n5PJaKbYE6mVwmOhYHjDLUOy2C'  # admin/scamdetector
+
+  # Watchtower für automatische Updates (optional)
+  watchtower:
+    image: containrrr/watchtower:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_POLL_INTERVAL=86400  # 24 Stunden
+      - WATCHTOWER_INCLUDE_STOPPED=true
+    restart: unless-stopped
+    profiles:
+      - auto-update
+
+# Netzwerk-Konfiguration
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1
+
+# Persistente Volumes
+volumes:
+  redis_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data/redis
+      
+  nginx_logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./logs/nginx
+      
+  portainer_data:
+    driver: local
+
+# Zusätzliche Konfiguration für Production
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+# Logging-Konfiguration auf alle Services anwenden
+services:
+  scam-detector-api:
+    logging: *default-logging
+    
+  nginx:
+    logging: *default-logging
+    
+  redis:
+    logging: *default-logging

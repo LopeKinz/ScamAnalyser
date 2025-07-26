@@ -1,0 +1,149 @@
+{
+  "name": "Scam Detector - KI-basierte Betrugs-Erkennung",
+  "short_name": "Scam Detector",
+  "description": "KI-basierte Erkennung von Online-Betrug mit Ollama und Llama3.2-vision",
+  "version": "1.0.0",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#667eea",
+  "theme_color": "#667eea",
+  "orientation": "portrait",
+  "scope": "/",
+  "lang": "de",
+  "dir": "ltr",
+  
+  "icons": [
+    {
+      "src": "icons/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  
+  "shortcuts": [
+    {
+      "name": "Schnell-Analyse",
+      "description": "Direkt zur Bildanalyse",
+      "url": "/?action=analyze",
+      "icons": [
+        {
+          "src": "icons/shortcut-analyze.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Hilfe",
+      "description": "Scam-Erkennungs-Tipps",
+      "url": "/?action=help",
+      "icons": [
+        {
+          "src": "icons/shortcut-help.png",
+          "sizes": "96x96", 
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  
+  "categories": ["security", "utilities", "productivity"],
+  
+  "screenshots": [
+    {
+      "src": "screenshots/desktop-1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Hauptansicht Desktop"
+    },
+    {
+      "src": "screenshots/mobile-1.png", 
+      "sizes": "640x1136",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobile Ansicht"
+    }
+  ],
+  
+  "share_target": {
+    "action": "/analyze",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "files": [
+        {
+          "name": "file",
+          "accept": ["image/*"]
+        }
+      ]
+    }
+  },
+  
+  "file_handlers": [
+    {
+      "action": "/analyze",
+      "accept": {
+        "image/*": [".png", ".jpg", ".jpeg", ".gif", ".webp"]
+      }
+    }
+  ],
+  
+  "protocol_handlers": [
+    {
+      "protocol": "web+scamdetector",
+      "url": "/analyze?url=%s"
+    }
+  ],
+  
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "navigate-new"]
+  }
+}

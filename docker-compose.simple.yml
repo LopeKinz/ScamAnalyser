@@ -1,0 +1,38 @@
+# Einfache Docker Compose Konfiguration ohne Dependency Cycle
+version: '3.8'
+
+services:
+  scam-detector-api:
+    build: ./backend
+    ports:
+      - "0.0.0.0:8000:8000"
+    environment:
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - CORS_ORIGINS=["*"]
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "0.0.0.0:80:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+      - ./nginx-simple.conf:/etc/nginx/nginx.conf:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  default:
+    driver: bridge
