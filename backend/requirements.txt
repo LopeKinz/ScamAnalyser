@@ -4,7 +4,7 @@ uvicorn[standard]==0.24.0
 python-multipart==0.0.6
 
 # Bildverarbeitung
-Pillow==10.1.0
+Pillow==10.3.0
 
 # HTTP Requests
 requests==2.31.0
